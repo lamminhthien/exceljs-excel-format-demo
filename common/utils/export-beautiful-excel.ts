@@ -44,8 +44,8 @@ export const exportBeautifulExcel = () => {
   // Add data to excel
   wsStudentResult.addRows(students);
 
-  // Add conditional formatting data bar to column C (ref: C:C),
-  // Please use patch-package and post-install for fix issue: The author of this module when they upgrade library, they forget to color attribute in Typescript🥲
+  // Add conditional formatting data bar to column C (ref: C:C), to use this feature well, we must learn a bit about excel column reference 😀
+  // Please use patch-package and post-install for fix issue: The author of this module when they upgrade library, they forget to add color attribute in Typescript🥲
   wsStudentResult.addConditionalFormatting({
     ref: `C:C`,
     rules: [
