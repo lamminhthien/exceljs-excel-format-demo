@@ -1,7 +1,7 @@
 import { Column, Workbook } from "exceljs";
 
 import { faker, fakerVI } from "@faker-js/faker";
-import saveAs from 'file-saver';
+import saveAs from "file-saver";
 
 export const exportBeautifulExcel = () => {
   // Initial new Excel Workbook
@@ -10,11 +10,16 @@ export const exportBeautifulExcel = () => {
   // Create Excel Sheet
   const wsStudentResult = workbook.addWorksheet("Student Result");
 
-  // Initial Excel Column Headers
+  // Initial Excel Column Headers. And can also apply style for each column
   const wsColumnHeaders: Partial<Column>[] = [
     {
       key: "name",
       header: "Name",
+      width: 40,
+      style: {
+        fill: { type: "pattern", pattern: "solid", fgColor: { argb: "FF0070C0" } },
+        font: { bold: true, size: 14, color: { argb: "FFFFFFFF" } },
+      },
     },
     {
       key: "class",
@@ -31,16 +36,16 @@ export const exportBeautifulExcel = () => {
 
   // Initial Sample data
   const students = Array.from({ length: 100 }, generateStudentResult);
-  console.log("🚀 ~ exportBeautifulExcel ~ students:", students)
+  console.log("🚀 ~ exportBeautifulExcel ~ students:", students);
 
   // Add data to excel
   wsStudentResult.addRows(students);
 
   // Writing data to file
-  workbook.xlsx.writeBuffer().then(buffer => {
+  workbook.xlsx.writeBuffer().then((buffer) => {
     saveAs(
       new Blob([buffer], {
-        type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+        type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       }),
       `student-result-exceljs.xlsx`
     );
