@@ -1,5 +1,4 @@
-import { IStudent } from "@/interfaces/student";
-import { Cell, Column, Workbook } from "exceljs";
+import { Column, Workbook } from "exceljs";
 
 import { faker, fakerVI } from "@faker-js/faker";
 import saveAs from 'file-saver';
@@ -32,6 +31,7 @@ export const exportBeautifulExcel = () => {
 
   // Initial Sample data
   const students = Array.from({ length: 100 }, generateStudentResult);
+  console.log("🚀 ~ exportBeautifulExcel ~ students:", students)
 
   // Add data to excel
   wsStudentResult.addRows(students);
@@ -49,7 +49,7 @@ export const exportBeautifulExcel = () => {
 
 export const generateStudentResult = () => {
   return {
-    name: fakerVI.name,
+    name: fakerVI.name.fullName(),
     class: faker.helpers.arrayElement(["Toán", "Sử", "Địa"]),
     score: faker.number.int({ min: 50, max: 100 }),
   };
