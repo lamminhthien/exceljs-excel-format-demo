@@ -10,7 +10,8 @@ export const exportBeautifulExcel = () => {
   // Create Excel Sheet
   const wsStudentResult = workbook.addWorksheet("Student Result");
 
-  // Initial Excel Column Headers. And can also apply style for each column
+  // Initial Excel Column Headers. And can also apply style for each column.
+  // Pay attention to key in your interface data
   const wsColumnHeaders: Partial<Column>[] = [
     {
       key: "name",
@@ -43,7 +44,8 @@ export const exportBeautifulExcel = () => {
   // Add data to excel
   wsStudentResult.addRows(students);
 
-  // Add conditional formatting data bar
+  // Add conditional formatting data bar to column C (ref: C:C),
+  // Please use patch-package and post-install for fix issue: The author of this module when they upgrade library, they forget to color attribute in Typescript🥲
   wsStudentResult.addConditionalFormatting({
     ref: `C:C`,
     rules: [
@@ -55,6 +57,7 @@ export const exportBeautifulExcel = () => {
         border: false,
         priority: 1,
         color: { argb: "90EE90" },
+        // cfvo mean the min value and max value for fill gradient color properly
         cfvo: [
           { type: "num", value: 0 },
           { type: "num", value: 100 },
@@ -63,7 +66,7 @@ export const exportBeautifulExcel = () => {
     ],
   });
 
-  // Writing data to file
+  // Write data and make browser download file by file-saver
   workbook.xlsx.writeBuffer().then((buffer) => {
     saveAs(
       new Blob([buffer], {
@@ -74,8 +77,8 @@ export const exportBeautifulExcel = () => {
   });
 };
 
-// Add condition formating for specific
-
+// Fake data by library fakerjs
+// Pay attention to key in your interface data
 export const generateStudentResult = () => {
   return {
     name: fakerVI.name.fullName(),
