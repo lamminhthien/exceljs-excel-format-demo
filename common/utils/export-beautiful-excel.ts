@@ -24,6 +24,9 @@ export const exportBeautifulExcel = () => {
     {
       key: "class",
       header: "Class",
+      style: {
+        font: { bold: true, size: 14 },
+      },
     },
     {
       key: "score",
@@ -36,10 +39,29 @@ export const exportBeautifulExcel = () => {
 
   // Initial Sample data
   const students = Array.from({ length: 100 }, generateStudentResult);
-  console.log("🚀 ~ exportBeautifulExcel ~ students:", students);
 
   // Add data to excel
   wsStudentResult.addRows(students);
+
+  // Add conditional formatting data bar
+  wsStudentResult.addConditionalFormatting({
+    ref: `C:C`,
+    rules: [
+      {
+        type: "dataBar",
+        minLength: 0,
+        maxLength: 100,
+        gradient: true,
+        border: false,
+        priority: 1,
+        color: { argb: "90EE90" },
+        cfvo: [
+          { type: "num", value: 0 },
+          { type: "num", value: 100 },
+        ],
+      },
+    ],
+  });
 
   // Writing data to file
   workbook.xlsx.writeBuffer().then((buffer) => {
@@ -51,6 +73,8 @@ export const exportBeautifulExcel = () => {
     );
   });
 };
+
+// Add condition formating for specific
 
 export const generateStudentResult = () => {
   return {

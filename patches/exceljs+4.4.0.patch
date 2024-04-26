@@ -1,0 +1,12 @@
+diff --git a/node_modules/exceljs/index.d.ts b/node_modules/exceljs/index.d.ts
+index 5979806..fd92660 100644
+--- a/node_modules/exceljs/index.d.ts
++++ b/node_modules/exceljs/index.d.ts
+@@ -1078,6 +1078,7 @@ export interface DataBarRuleType extends ConditionalFormattingBaseRule {
+ 	axisPosition?: 'auto' | 'middle' | 'none';
+ 	direction?: 'context' | 'leftToRight' | 'rightToLeft';
+ 	cfvo?: Cvfo[];
++	color?: Partial<Color>;
+ }
+ 
+ export type ConditionalFormattingRule = ExpressionRuleType | CellIsRuleType | Top10RuleType | AboveAverageRuleType | ColorScaleRuleType | IconSetRuleType
