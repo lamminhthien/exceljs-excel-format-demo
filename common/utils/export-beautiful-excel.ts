@@ -86,3 +86,10 @@ export const generateStudentResult = () => {
     score: faker.number.int({ min: 50, max: 100 }),
   };
 };
+
+// Get Column Headers
+export const getColumnHeaders = (jsonData: any[]) => {
+  return Array.from(new Set(jsonData.flatMap(Object.keys))).map(col => {
+    return {header: col, key: col};
+  });
+};
