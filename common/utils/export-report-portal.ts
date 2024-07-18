@@ -1,0 +1,91 @@
+import ExcelJS from "exceljs";
+
+interface Student {
+  name: string;
+  email: string;
+  phone: string;
+  course: string;
+  startDate: string;
+  classTime: string;
+}
+
+async function createStudentListExcel(data: Student[], outputPath: string): Promise<void> {
+  // Create a new workbook and worksheet
+  const workbook = new ExcelJS.Workbook();
+  const worksheet = workbook.addWorksheet("Student List");
+
+  // Define columns
+  worksheet.columns = [
+    { header: "Name", key: "name", width: 20 },
+    { header: "Email", key: "email", width: 30 },
+    { header: "Phone", key: "phone", width: 15 },
+    { header: "Course", key: "course", width: 25 },
+    { header: "Start Date", key: "startDate", width: 15 },
+    { header: "Class Time", key: "classTime", width: 15 },
+  ];
+
+  // Add data to the worksheet
+  worksheet.addRows(data);
+
+  // Format header
+  const headerRow = worksheet.getRow(1);
+  headerRow.font = { color: { argb: "FFFFFFFF" }, bold: true };
+  headerRow.fill = {
+    type: "pattern",
+    pattern: "solid",
+    fgColor: { argb: "FF000080" }, // Dark blue
+  };
+
+  // Format data cells
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber > 1) {
+      row.font = { color: { argb: "FF000000" } };
+      const nameCell = row.getCell("name");
+      if (nameCell) {
+        nameCell.font = { color: { argb: "FF0000FF" } };
+      }
+    }
+
+    row.eachCell((cell) => {
+      cell.border = {
+        top: { style: "thin", color: { argb: "FF808080" } },
+        left: { style: "thin", color: { argb: "FF808080" } },
+        bottom: { style: "thin", color: { argb: "FF808080" } },
+        right: { style: "thin", color: { argb: "FF808080" } },
+      };
+    });
+  });
+
+  // Add hyperlinks for email and phone
+  worksheet.eachRow((row, rowNumber) => {
+    if (rowNumber > 1) {
+      const emailCell = row.getCell("email");
+      const phoneCell = row.getCell("phone");
+
+      if (emailCell && emailCell.value) {
+        emailCell.value = {
+          text: emailCell.value.toString(),
+          hyperlink: `mailto:${emailCell.value}`,
+        };
+      }
+
+      if (phoneCell && phoneCell.value) {
+        phoneCell.value = {
+          text: phoneCell.value.toString(),
+          hyperlink: `tel:${phoneCell.value}`,
+        };
+      }
+    }
+  });
+
+  // Save the Excel file
+  try {
+    await workbook.xlsx.writeFile(outputPath);
+    console.log("Excel file has been created successfully!");
+  } catch (error) {
+    console.error("An error occurred:", error);
+    throw error;
+  }
+}
+
+export default createStudentListExcel;
