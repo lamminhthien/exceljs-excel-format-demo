@@ -1,5 +1,6 @@
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
+import { centerAlignHeader, centerAlignRowVertically } from "./exceljs.util";
 
 interface Student {
   name: string;
@@ -19,7 +20,7 @@ export const createStudentListExcel = (data: Student[]) => {
   worksheet.columns = [
     { header: "Name", key: "name", width: 20 },
     { header: "Email", key: "email", width: 30 },
-    { header: "Phone", key: "phone", width: 15 },
+    { header: "Phone", key: "phone", width: 15, style: { numFmt: "@" } },
     { header: "Course", key: "course", width: 25 },
     { header: "Start Date", key: "startDate", width: 15 },
     { header: "Class Time", key: "classTime", width: 15 },
@@ -30,12 +31,18 @@ export const createStudentListExcel = (data: Student[]) => {
 
   // Format header
   const headerRow = worksheet.getRow(1);
-  headerRow.font = { color: { argb: "FFFFFFFF" }, bold: true };
-  headerRow.fill = {
-    type: "pattern",
-    pattern: "solid",
-    fgColor: { argb: "FF000080" }, // Dark blue
-  };
+  headerRow.eachCell((cell: ExcelJS.Cell) => {
+    if (cell.value) {
+      // Only style cells with content
+      cell.alignment = { vertical: "middle", horizontal: "center" };
+      cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
+      cell.fill = {
+        type: "pattern",
+        pattern: "solid",
+        fgColor: { argb: "FF000080" }, // Dark blue
+      };
+    }
+  });
 
   // Format data cells
   worksheet.eachRow((row, rowNumber) => {
@@ -45,6 +52,7 @@ export const createStudentListExcel = (data: Student[]) => {
       if (nameCell) {
         nameCell.font = { color: { argb: "FF0000FF" } };
       }
+      centerAlignRowVertically(row);
     }
 
     row.eachCell((cell) => {
@@ -72,11 +80,18 @@ export const createStudentListExcel = (data: Student[]) => {
 
       if (phoneCell && phoneCell.value) {
         phoneCell.value = {
-          text: phoneCell.value.toString(),
+          text: `${phoneCell.value}`,
           hyperlink: `tel:${phoneCell.value}`,
         };
       }
     }
+  });
+
+  centerAlignHeader(worksheet);
+
+  // Ensure phone numbers are treated as text
+  worksheet.getColumn("phone").eachCell({ includeEmpty: false }, (cell) => {
+    cell.numFmt = "@";
   });
 
   // Save the Excel file
