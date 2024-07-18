@@ -12,6 +12,7 @@ export const centerAlignRowVertically = (row: Row): void => {
     cell.alignment = {
       ...cell.alignment,
       vertical: "middle",
+      indent: 1,
     };
   });
 };
@@ -23,8 +24,6 @@ export const autoColumnWidth = (worksheet: Worksheet) => {
       column.eachCell({ includeEmpty: true }, (cell) => {
         maxColumnLength = Math.max(maxColumnLength, cell.value ? cell.value.toString().length + 5 : 0);
       });
-      // For column A: this is user_id column, we must set width different than other column
-      column.letter === "A" ? (column.width = maxColumnLength + 2.1) : (column.width = (maxColumnLength + 2) * 1);
     }
   });
   return worksheet; // for chaining.

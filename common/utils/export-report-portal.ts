@@ -12,7 +12,6 @@ interface Student {
 }
 
 export const createStudentListExcel = (data: Student[]) => {
-  // Create a new workbook and worksheet
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Student List");
 
@@ -29,13 +28,28 @@ export const createStudentListExcel = (data: Student[]) => {
   // Add data to the worksheet
   worksheet.addRows(data);
 
+  // Set custom row height and font sizes
+  const ROW_HEIGHT = 30; // Increased from 25
+  const HEADER_FONT_SIZE = 14;
+  const DATA_FONT_SIZE = 12;
+
+  worksheet.eachRow((row, rowNumber) => {
+    row.height = ROW_HEIGHT;
+    if (rowNumber === 1) {
+      // Header row
+      row.font = { size: HEADER_FONT_SIZE, bold: true, color: { argb: "FFFFFFFF" } };
+    } else {
+      // Data rows
+      row.font = { size: DATA_FONT_SIZE, color: { argb: "FF000000" } };
+    }
+  });
+
   // Format header
   const headerRow = worksheet.getRow(1);
+  headerRow.height = ROW_HEIGHT + 5; // Make header slightly taller
   headerRow.eachCell((cell: ExcelJS.Cell) => {
     if (cell.value) {
-      // Only style cells with content
       cell.alignment = { vertical: "middle", horizontal: "center" };
-      cell.font = { color: { argb: "FFFFFFFF" }, bold: true };
       cell.fill = {
         type: "pattern",
         pattern: "solid",
@@ -47,10 +61,9 @@ export const createStudentListExcel = (data: Student[]) => {
   // Format data cells
   worksheet.eachRow((row, rowNumber) => {
     if (rowNumber > 1) {
-      row.font = { color: { argb: "FF000000" } };
       const nameCell = row.getCell("name");
       if (nameCell) {
-        nameCell.font = { color: { argb: "FF0000FF" } };
+        nameCell.font = { size: DATA_FONT_SIZE, color: { argb: "FF0000FF" } };
       }
       centerAlignRowVertically(row);
     }
@@ -78,7 +91,6 @@ export const createStudentListExcel = (data: Student[]) => {
         };
       }
 
-      // To handle issue number store as text
       if (phoneCell && phoneCell.value) {
         phoneCell.value = {
           formula: `""&"${phoneCell.value}"`,
@@ -93,9 +105,11 @@ export const createStudentListExcel = (data: Student[]) => {
   // Auto column width
   autoColumnWidth(worksheet);
 
+  // Remove grid lines
+  worksheet.properties.showGridLines = false;
+
   // Save the Excel file
   try {
-    // Write data and make browser download file by file-saver
     workbook.xlsx.writeBuffer().then((buffer) => {
       saveAs(
         new Blob([buffer], {
