@@ -1,6 +1,6 @@
 import ExcelJS from "exceljs";
 import saveAs from "file-saver";
-import { centerAlignHeader, centerAlignRowVertically } from "./exceljs.util";
+import { autoColumnWidth, centerAlignHeader, centerAlignRowVertically } from "./exceljs.util";
 
 interface Student {
   name: string;
@@ -20,7 +20,7 @@ export const createStudentListExcel = (data: Student[]) => {
   worksheet.columns = [
     { header: "Name", key: "name", width: 20 },
     { header: "Email", key: "email", width: 30 },
-    { header: "Phone", key: "phone", width: 15, style: { numFmt: "@" } },
+    { header: "Phone", key: "phone", width: 15 },
     { header: "Course", key: "course", width: 25 },
     { header: "Start Date", key: "startDate", width: 15 },
     { header: "Class Time", key: "classTime", width: 15 },
@@ -78,9 +78,10 @@ export const createStudentListExcel = (data: Student[]) => {
         };
       }
 
+      // To handle issue number store as text
       if (phoneCell && phoneCell.value) {
         phoneCell.value = {
-          text: `${phoneCell.value}`,
+          formula: `""&"${phoneCell.value}"`,
           hyperlink: `tel:${phoneCell.value}`,
         };
       }
@@ -89,10 +90,8 @@ export const createStudentListExcel = (data: Student[]) => {
 
   centerAlignHeader(worksheet);
 
-  // Ensure phone numbers are treated as text
-  worksheet.getColumn("phone").eachCell({ includeEmpty: false }, (cell) => {
-    cell.numFmt = "@";
-  });
+  // Auto column width
+  autoColumnWidth(worksheet);
 
   // Save the Excel file
   try {
