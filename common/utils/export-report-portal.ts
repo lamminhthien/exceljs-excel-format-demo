@@ -1,4 +1,5 @@
 import ExcelJS from "exceljs";
+import saveAs from "file-saver";
 
 interface Student {
   name: string;
@@ -9,7 +10,7 @@ interface Student {
   classTime: string;
 }
 
-async function createStudentListExcel(data: Student[], outputPath: string): Promise<void> {
+export const createStudentListExcel = (data: Student[]) => {
   // Create a new workbook and worksheet
   const workbook = new ExcelJS.Workbook();
   const worksheet = workbook.addWorksheet("Student List");
@@ -80,12 +81,19 @@ async function createStudentListExcel(data: Student[], outputPath: string): Prom
 
   // Save the Excel file
   try {
-    await workbook.xlsx.writeFile(outputPath);
-    console.log("Excel file has been created successfully!");
+    // Write data and make browser download file by file-saver
+    workbook.xlsx.writeBuffer().then((buffer) => {
+      saveAs(
+        new Blob([buffer], {
+          type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+        }),
+        `student-result-exceljs.xlsx`
+      );
+    });
   } catch (error) {
     console.error("An error occurred:", error);
     throw error;
   }
-}
+};
 
 export default createStudentListExcel;
